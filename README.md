@@ -11,7 +11,9 @@ We will create a web application that uses an API to generate music playlists ba
 
 AI Declarations: <br>
 [Greg](./docs/M0_AI_Declaration_Greg_Kuchta_301479235.pdf) <br>
-[Murat](./docs/M0_AI_Declaration_Murat_Guler_301461628.pdf)
-[Brandon](./docs/M0_AI_Declaration_Brandon_Chattha_301579323.pdf)
+[Murat](./docs/M0_AI_Declaration_Murat_Guler_301461628.pdf) <br>
+[Brandon](./docs/M0_AI_Declaration_Brandon_Chattha_301579323.pdf) <br>
+[Roi](./docs/M0_AI_Declaration_Roi_Lee_301560420.PDF) <br>
+
 
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=16382268&assignment_repo_type=AssignmentRepo)
