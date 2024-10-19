@@ -1,4 +1,4 @@
-# Project Title
+# Music Playlist Generator
 
 ### Members:
 - Brandon Chattha 
