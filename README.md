@@ -27,4 +27,4 @@ AI Declarations: <br>
 [Brandon](./docs/ai-disclosures/M0_AI_Declaration_Brandon_Chattha_301579323.pdf) <br>
 [Roi](./docs/ai-disclosures/M0_AI_Declaration_Roi_Lee_301560420.PDF) <br>
 
-[Project Planning Report](./docs/Milestone1/Project Planning Report.pdf)
+[Project Planning Report](./docs/Milestone1/Project%20Planning%20Report.pdf)
