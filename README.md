@@ -22,7 +22,7 @@ AI Declarations: <br>
 
 ## Milestone 1
 AI Declarations: <br>
-[Greg](./docs/ai-disclosures/M0_AI_Declaration_Greg_Kuchta_301479235.pdf) <br>
+[Greg](./docs/ai-disclosures/M1_AI_Declaration_Greg_Kuchta_301479235.pdf) <br>
 [Murat](./docs/ai-disclosures/M1_AI_Declaration_Murat_Guler_301461628.pdf) <br>
 [Brandon](./docs/ai-disclosures/M1_AI_Declaration_Brandon_Chattha_301579323.pdf) <br>
 [Roi](/docs/ai-disclosures/M1_AI_Declaration_Roi_Lee_301560420.pdf) <br>
