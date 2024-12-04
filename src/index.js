@@ -1,7 +1,7 @@
 const clientId = 'efe131fac3c74d3cac20ae0886b01ff9';
 //Swap next two lines for github/local testing
 // const redirectUri = 'http://127.0.0.1:5500/createplaylist.html';
-const redirectUri = 'https://cmpt-276-fall-2024.github.io/project-22-vines/createplaylist.html';
+const redirectUri = 'https://cmpt-276-fall-2024.github.io/project-22-vines/src/createplaylist.html';
 // Old link: https://carbonate1.github.io/Test.github.io/createplaylist
 // const redirectUri = 'http://127.0.0.1:5500/Code/createplaylist.html';
 let accessToken = '';
