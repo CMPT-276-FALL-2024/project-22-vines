@@ -1,60 +1,72 @@
 document.getElementById('search-button').addEventListener('click', searchSongs);
 document.getElementById('create-playlist-button').addEventListener('click', createPlaylist);
-document.getElementById('top-songs-button').addEventListener('click', getTopSongs);
 
 // Random change
 let accessToken = '';
 let query = '';
+const gsbKey = '6841f85f109ed5bb43076a588fb8d79d';
 
-async function getTopSongs() {
-    if (!accessToken) {
-        return alert('Access token is missing. Please log in.');
-    }
-
-    try {
-        // Fetch the featured playlist with top songs
-        const response = await fetch('https://api.spotify.com/v1/browse/featured-playlists?limit=1', {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            }
-        });
-
-        if (!response.ok) {
-            console.error('Failed to fetch top songs:', response.statusText);
-        }
-
-        const data = await response.json();
-        const topPlaylist = data.playlists.items[0]; // Assuming the first playlist is the top one
-
-        // Fetch the tracks from the top playlist
-        const tracksResponse = await fetch(topPlaylist.tracks.href, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            }
-        });
-
-        if (!tracksResponse.ok) {
-            console.error('Failed to fetch playlist tracks:', tracksResponse.statusText);
-        }
-
-        const tracksData = await tracksResponse.json();
-
-        // Display only the top 10 tracks
-        const topTracks = tracksData.items.slice(0, 10).map(item => item.track);
-        displayResults(topTracks);
-
-        console.log('Top 10 songs fetched successfully.');
-    } catch (error) {
-        console.error('Error fetching top songs:', error);
-        alert('An error occurred while fetching the top songs.');
-    }
-
-    // Set the name the playlist
-    query = "Top 10 Playlist";
-    // Display the "Create Playlist" button
-    document.getElementById('create-playlist-button').style.display = 'block';
-    document.getElementById('create-playlist-button').trackUris= tracks.map(track => track.uri);
+//Generate dropdown 1-50
+lengthInput = document.getElementById('length-input');
+for (let i=1; i< 50; i++) {
+    option=document.createElement('option');
+    option.value=i;
+    option.textContent=i;
+    lengthInput.appendChild(option);
 }
+lengthInput.value="10"; //sets default
+
+//API deprecated by Spotify
+
+// async function getTopSongs() {
+//     if (!accessToken) {
+//         return alert('Access token is missing. Please log in.');
+//     }
+
+//     try {
+//         // Fetch the featured playlist with top songs
+//         const response = await fetch('https://api.spotify.com/v1/browse/featured-playlists?limit=1', {
+//             headers: {
+//                 'Authorization': `Bearer ${accessToken}`
+//             }
+//         });
+
+//         if (!response.ok) {
+//             console.error('Failed to fetch top songs:', response.statusText);
+//         }
+
+//         const data = await response.json();
+//         const topPlaylist = data.playlists.items[0]; // Assuming the first playlist is the top one
+
+//         // Fetch the tracks from the top playlist
+//         const tracksResponse = await fetch(topPlaylist.tracks.href, {
+//             headers: {
+//                 'Authorization': `Bearer ${accessToken}`
+//             }
+//         });
+
+//         if (!tracksResponse.ok) {
+//             console.error('Failed to fetch playlist tracks:', tracksResponse.statusText);
+//         }
+
+//         const tracksData = await tracksResponse.json();
+
+//         // Display only the top 10 tracks
+//         const topTracks = tracksData.items.slice(0, 10).map(item => item.track);
+//         displayResults(topTracks);
+
+//         console.log('Top 10 songs fetched successfully.');
+//     } catch (error) {
+//         console.error('Error fetching top songs:', error);
+//         alert('An error occurred while fetching the top songs.');
+//     }
+
+//     // Set the name the playlist
+//     query = "Top 10 Playlist";
+//     // Display the "Create Playlist" button
+//     document.getElementById('create-playlist-button').style.display = 'block';
+//     document.getElementById('create-playlist-button').trackUris= tracks.map(track => track.uri);
+// }
 
 async function searchSongs() {
 
@@ -107,8 +119,9 @@ async function getSongsFromSpotify(query, playlistLength, offset, filteredTracks
 
 function displayResults(tracks) {
     const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = '';
-
+    resultsDiv.innerHTML='';
+    const resultsBox = document.getElementById('results-box');
+    resultsBox.style.display='block';
     if (tracks.length === 0) {
         resultsDiv.textContent = 'No results found.';
         return;
@@ -116,17 +129,44 @@ function displayResults(tracks) {
 
     tracks.forEach(track => {
         const trackElement = document.createElement('div');
-        trackElement.classList.add('track');
+        trackElement.classList.add('track'); //Created a track class and moved the styling to the CSS page - Greg
 
         // Create an image element for the album cover
         const albumCover = document.createElement('img');
         albumCover.src = track.album.images[0]?.url || 'placeholder-image-url';
         albumCover.alt = `${track.name} album cover`;
-        albumCover.style.width = '100px'; // Adjust size as needed
+        albumCover.style.width = 'auto'; // Adjust size as needed
 
         // Create a text element for song name and artist
         const trackInfo = document.createElement('p');
-        trackInfo.textContent = `${track.name} by ${track.artists[0].name}`;
+        
+        // Set attribute to allow for track info to contain line breaks
+        trackInfo.classList.add('track-info');
+        // trackInfo.setAttribute('style', 'white-space: pre;');
+
+        // Refactor track names to feed to getsongbpm API
+        const trackNameWithoutFeatures = track.name.replace(/ *\([^)]*\) */g, "");
+        const gsbTrack = trackNameWithoutFeatures.replaceAll(" ", "+");
+        const gsbArtist = track.artists[0].name.replaceAll(" ", "+");
+
+        trackInfo.textContent = `${track.name} by ${track.artists[0].name}`
+
+        // Add indication of a song being explicit
+        if (track.explicit){
+            trackInfo.textContent += ` (Explicit)`
+        }
+
+        // Attempt to get song metadata and append
+        var metadata = gsbSearch(gsbTrack, gsbArtist)
+        .then(
+            (result) => {
+            trackInfo.textContent += `\r\nBPM: ${result.search[0].tempo}`
+            trackInfo.textContent += `\r\nKey: ${result.search[0].key_of}`
+        })
+        .catch(
+            (error) => {
+            trackInfo.textContent += `\r\n Additional metadata unavailable`
+        })
 
         // Append the album cover and track info to the track element
         trackElement.appendChild(albumCover);
@@ -134,12 +174,15 @@ function displayResults(tracks) {
 
         // Append the track element to the results div
         resultsDiv.appendChild(trackElement);
-    });
+    })
 
     // display the "Create Playlist" button
     document.getElementById('create-playlist-button').style.display = 'block';
     document.getElementById('create-playlist-button').trackUris= tracks.map(track => track.uri);
-}
+
+    document.getElementById(`label-for-make-playlist-private-checkbox`).style.visibility = 'visible';
+    document.getElementById(`make-playlist-private-checkbox`).style.display = 'block';
+    }
 
 async function createPlaylist() {
     const trackUris = document.getElementById('create-playlist-button').trackUris;
@@ -153,6 +196,7 @@ async function createPlaylist() {
         });
         const userData = await userResponse.json();
         const userId = userData.id;
+        const isPrivate = document.getElementById(`make-playlist-private-checkbox`)
 
         // Create a new playlist
         const playlistResponse = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
@@ -164,7 +208,7 @@ async function createPlaylist() {
             body: JSON.stringify({
                 name: query + ' from Music Generator',
                 description: 'Playlist created from song search',
-                public: true
+                public: !(isPrivate.checked)
             })
         });
         const playlistData = await playlistResponse.json();
@@ -193,8 +237,11 @@ function filterUniqueTracks(tracks) {
     
     tracks.forEach((track, index) => {
 
-        // Always keep first result
-        if (index === 0) {
+        // Check if user is filtering explicit tracks
+        const filteringExplicitTracks = document.getElementById(`exclude-explicit-songs-checkbox`);
+
+        // Always keep first result unless filtering out explicit songs
+        if (index === 0 && (!(filteringExplicitTracks.checked && track.explicit))) {
             uniqueTracks.push(track);
             trackNames.add(track.name.toLowerCase());
             return;
@@ -207,7 +254,7 @@ function filterUniqueTracks(tracks) {
         const isRemixOrRemaster = /remix|re-recorded|remaster|edit|version|cover|feat|live|acoustic|instrumental/i.test(normalizedTrackName);
 
         // If it's not a remix/version and the track name hasn't been added yet, include it
-        if (!isRemixOrRemaster && !trackNames.has(normalizedTrackName)) {
+        if ((!isRemixOrRemaster && !trackNames.has(normalizedTrackName)) && !(filteringExplicitTracks.checked && track.explicit)) {
             trackNames.add(normalizedTrackName);
             uniqueTracks.push(track);
         } 
@@ -228,8 +275,10 @@ function getAccessTokenFromURL() {
         }, {});
 
         // Get the access token from the parsed object
+
         if (hash.access_token) {
             accessToken = hash.access_token; // Set the global accessToken
+            sessionStorage.setItem('accessToken', accessToken); 
         } else {
             console.error("No access token found in the URL."); // Delete me
         }
@@ -241,5 +290,23 @@ function getAccessTokenFromURL() {
     }
 }
 
+async function gsbSearch(song, artist){
+    try{
+        const response = await fetch(`https://api.getsongbpm.com/search/?api_key=${gsbKey}&type=both&lookup=song:${song}artist:${artist}&limit=1`)
+        if (!response.ok){
+            throw new Error('metadata not found');
+        }
+        const data = response.json();
+        return data;
+    }
+    catch(error){
+        return error;
+    }
+}
+
 // Run the function to get the access token when the page loads
-getAccessTokenFromURL();
+accessToken=sessionStorage.getItem('accessToken'); //Could possibly bug if token expires - close and re-open browser to generate new token
+if (!accessToken) {
+    getAccessTokenFromURL();
+}
+    
