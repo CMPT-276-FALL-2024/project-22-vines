@@ -1,9 +1,5 @@
 const clientId = 'efe131fac3c74d3cac20ae0886b01ff9';
-//Swap next two lines for github/local testing
-//const redirectUri = 'http://127.0.0.1:5500/createplaylist.html';
 const redirectUri = 'https://cmpt-276-fall-2024.github.io/project-22-vines/src/createplaylist.html';
-// Old link: https://carbonate1.github.io/Test.github.io/createplaylist
-// const redirectUri = 'http://127.0.0.1:5500/Code/createplaylist.html';
 let accessToken = '';
 
 function setupEventListeners() {
@@ -15,6 +11,7 @@ function setupEventListeners() {
     }
 }
 
+// Calls the Spotify account sign-in page and redirects user to the playlist creation page
 function authorizeSpotify() {
     const authEndpoint = 'https://accounts.spotify.com/authorize';
     const scope = 'playlist-modify-public playlist-modify-private';
@@ -22,6 +19,7 @@ function authorizeSpotify() {
     window.location = `${authEndpoint}?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=token&show_dialog=true`;
 }
 
+// Gets the AccessToken (recieved after logging-in) upon refreshing the page
 function getAccessToken() {
     if (window.location.hash) {
         const hash = window.location.hash.substring(1).split('&').reduce((acc, item) => {
