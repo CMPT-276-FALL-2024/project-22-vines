@@ -2,7 +2,14 @@ const clientId = 'efe131fac3c74d3cac20ae0886b01ff9';
 const redirectUri = 'https://cmpt-276-fall-2024.github.io/project-22-vines/src/createplaylist.html';
 let accessToken = '';
 
-document.getElementById('log-in-button').addEventListener('click', authorizeSpotify);
+function setupEventListeners() {
+    const button = document.getElementById('log-in-button');
+    if (button) {
+        button.addEventListener('click', authorizeSpotify);
+    } else {
+        console.error("Login button not found in the DOM.");
+    }
+}
 
 // Calls the Spotify account sign-in page and redirects user to the playlist creation page
 function authorizeSpotify() {
@@ -26,5 +33,10 @@ function getAccessToken() {
     }
 }
 
-// Get access token from URL on page load
-getAccessToken();
+module.exports = { setupEventListeners, authorizeSpotify, getAccessToken, getAccessTokenValue };
+
+function getAccessTokenValue() {
+    return accessToken;
+}
+
+
