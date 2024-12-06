@@ -6,8 +6,14 @@ const redirectUri = 'https://cmpt-276-fall-2024.github.io/project-22-vines/src/c
 // const redirectUri = 'http://127.0.0.1:5500/Code/createplaylist.html';
 let accessToken = '';
 
-document.getElementById('log-in-button').addEventListener('click', authorizeSpotify);
-
+function setupEventListeners() {
+    const button = document.getElementById('log-in-button');
+    if (button) {
+        button.addEventListener('click', authorizeSpotify);
+    } else {
+        console.error("Login button not found in the DOM.");
+    }
+}
 
 function authorizeSpotify() {
     const authEndpoint = 'https://accounts.spotify.com/authorize';
@@ -17,7 +23,6 @@ function authorizeSpotify() {
 }
 
 function getAccessToken() {
-
     if (window.location.hash) {
         const hash = window.location.hash.substring(1).split('&').reduce((acc, item) => {
             const parts = item.split('=');
@@ -30,5 +35,10 @@ function getAccessToken() {
     }
 }
 
-// Get access token from URL on page load
-getAccessToken();
+module.exports = { setupEventListeners, authorizeSpotify, getAccessToken, getAccessTokenValue };
+
+function getAccessTokenValue() {
+    return accessToken;
+}
+
+
