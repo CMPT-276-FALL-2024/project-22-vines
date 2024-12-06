@@ -237,8 +237,10 @@ function filterUniqueTracks(tracks) {
     
     tracks.forEach((track, index) => {
 
-        // Check if user is filtering explicit tracks
+        // Check if user is filtering explicit or popular tracks 
         const filteringExplicitTracks = document.getElementById(`exclude-explicit-songs-checkbox`);
+        const filteringPopularTracks = document.getElementById(`find-niche-songs-checkbox`)
+        const popularityThreshhold = 10;
 
         // Always keep first result unless filtering out explicit songs
         if (index === 0 && (!(filteringExplicitTracks.checked && track.explicit))) {
@@ -254,7 +256,7 @@ function filterUniqueTracks(tracks) {
         const isRemixOrRemaster = /remix|re-recorded|remaster|edit|version|cover|feat|live|acoustic|instrumental/i.test(normalizedTrackName);
 
         // If it's not a remix/version and the track name hasn't been added yet, include it
-        if ((!isRemixOrRemaster && !trackNames.has(normalizedTrackName)) && !(filteringExplicitTracks.checked && track.explicit)) {
+        if ((!isRemixOrRemaster && !trackNames.has(normalizedTrackName)) && !(filteringPopularTracks.checked && (track.popularity > popularityThreshhold)) && !(filteringExplicitTracks.checked && track.explicit)) {
             trackNames.add(normalizedTrackName);
             uniqueTracks.push(track);
         } 
