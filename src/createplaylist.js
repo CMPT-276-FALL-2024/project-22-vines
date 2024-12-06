@@ -291,7 +291,7 @@ function getAccessTokenFromURL() {
     }
 }
 
-// Gets informatino from GetSongBPM API
+// Gets information from GetSongBPM API
 async function gsbSearch(song, artist){
     try{
         const response = await fetch(`https://api.getsongbpm.com/search/?api_key=${gsbKey}&type=both&lookup=song:${song}artist:${artist}&limit=1`)
