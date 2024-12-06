@@ -1,7 +1,6 @@
 document.getElementById('search-button').addEventListener('click', searchSongs);
 document.getElementById('create-playlist-button').addEventListener('click', createPlaylist);
 
-// Random change
 let accessToken = '';
 let query = '';
 const gsbKey = '6841f85f109ed5bb43076a588fb8d79d';
@@ -16,8 +15,7 @@ for (let i=1; i< 50; i++) {
 }
 lengthInput.value="10"; //sets default
 
-//API deprecated by Spotify
-
+//API deprecated by Spotify rendering the following function invalid
 // async function getTopSongs() {
 //     if (!accessToken) {
 //         return alert('Access token is missing. Please log in.');
@@ -68,6 +66,7 @@ lengthInput.value="10"; //sets default
 //     document.getElementById('create-playlist-button').trackUris= tracks.map(track => track.uri);
 // }
 
+// Gets songs based on search request of user and playlist size inputted by user
 async function searchSongs() {
 
     query = document.getElementById('song-input').value;
@@ -93,13 +92,11 @@ async function searchSongs() {
     }
     // Display the filtered results
     displayResults(filteredTracks);
-
-    // For testing purposes only (Delete me)
-    console.log("Tracks length: " + filteredTracks.length)
 }
 
+// Get the songs from Spotify according to the inputs from the user. This function is called infinitely until Spotify runs out of songs
+// that follow the user's input (artist name/genre), or the playlist length is met
 async function getSongsFromSpotify(query, playlistLength, offset, filteredTracksLength) {
-    console.log("tracks list: " + filteredTracksLength + "\nOffset: " + offset) // Delete me
     try {
         const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=${playlistLength}&offset=${offset}`, {
             headers: {
@@ -117,6 +114,7 @@ async function getSongsFromSpotify(query, playlistLength, offset, filteredTracks
     }
 }
 
+// Displays the playlist generation results to the website screen
 function displayResults(tracks) {
     const resultsDiv = document.getElementById('results');
     resultsDiv.innerHTML='';
@@ -142,7 +140,6 @@ function displayResults(tracks) {
         
         // Set attribute to allow for track info to contain line breaks
         trackInfo.classList.add('track-info');
-        // trackInfo.setAttribute('style', 'white-space: pre;');
 
         // Refactor track names to feed to getsongbpm API
         const trackNameWithoutFeatures = track.name.replace(/ *\([^)]*\) */g, "");
@@ -176,7 +173,7 @@ function displayResults(tracks) {
         resultsDiv.appendChild(trackElement);
     })
 
-    // display the "Create Playlist" button
+    // display the "Create Playlist" button and private checkbox
     document.getElementById('create-playlist-button').style.display = 'block';
     document.getElementById('create-playlist-button').trackUris= tracks.map(track => track.uri);
 
@@ -184,6 +181,7 @@ function displayResults(tracks) {
     document.getElementById(`make-playlist-private-checkbox`).style.display = 'block';
     }
 
+// Creates a playlist in the user's Spotify account
 async function createPlaylist() {
     const trackUris = document.getElementById('create-playlist-button').trackUris;
 
@@ -231,6 +229,7 @@ async function createPlaylist() {
     }
 }
 
+// Filters out most duplicate, "remastered" and "cover" tracks
 function filterUniqueTracks(tracks) {
     const uniqueTracks = [];
     const trackNames = new Set();  // To track unique track names
@@ -252,7 +251,7 @@ function filterUniqueTracks(tracks) {
         // Normalize the track name to handle case sensitivity
         const normalizedTrackName = track.name.toLowerCase();
         
-        // Check if the track is a remix, remaster, edit, version, or cover using keywords
+        // Check if the track is a remix, remaster, etc. using keywords
         const isRemixOrRemaster = /remix|re-recorded|remaster|edit|version|cover|feat|live|acoustic|instrumental/i.test(normalizedTrackName);
 
         // If it's not a remix/version and the track name hasn't been added yet, include it
@@ -292,6 +291,7 @@ function getAccessTokenFromURL() {
     }
 }
 
+// Gets informatino from GetSongBPM API
 async function gsbSearch(song, artist){
     try{
         const response = await fetch(`https://api.getsongbpm.com/search/?api_key=${gsbKey}&type=both&lookup=song:${song}artist:${artist}&limit=1`)
